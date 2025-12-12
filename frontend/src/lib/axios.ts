@@ -1,4 +1,5 @@
 import axios from 'axios';
+import { useAuthStore } from "../stores/auth.store";
 
 export const api = axios.create({
   baseURL: import.meta.env.VITE_API_URL || 'http://localhost:8000/api',
@@ -7,32 +8,28 @@ export const api = axios.create({
   },
 });
 
-// Request interceptor
+// Request interceptor - add auth token
 api.interceptors.request.use(
-  (config) => {
-    // You can add auth token here
-    // const token = localStorage.getItem('token');
-    // if (token) {
-    //   config.headers.Authorization = `Bearer ${token}`;
-    // }
-    return config;
-  },
-  (error) => {
-    return Promise.reject(error);
-  }
+	(config) => {
+		const token = useAuthStore.getState().token;
+		if (token) {
+			config.headers.Authorization = `Bearer ${token}`;
+		}
+		return config;
+	},
+	(error) => Promise.reject(error)
 );
 
-// Response interceptor
+// Response interceptor - handle 401
 api.interceptors.response.use(
-  (response) => response,
-  (error) => {
-    // Handle errors globally
-    if (error.response?.status === 401) {
-      // Handle unauthorized
-    }
-    return Promise.reject(error);
-  }
+	(response) => response,
+	(error) => {
+		if (error.response?.status === 401) {
+			useAuthStore.getState().logout();
+			window.location.href = "/login";
+		}
+		return Promise.reject(error);
+	}
 );
 
 export default api;
-

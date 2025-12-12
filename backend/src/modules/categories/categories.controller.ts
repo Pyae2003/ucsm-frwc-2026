@@ -4,52 +4,34 @@ import { sendSuccess, sendCreated } from '../../utils/response.js';
 import { AppError } from '../../middleware/index.js';
 import type { CreateCategoryInput, UpdateCategoryInput } from './categories.schema.js';
 
-export const getCategories = async (
-  _req: Request,
-  res: Response,
-  next: NextFunction
-): Promise<void> => {
-  try {
-    const categories = await prisma.category.findMany({
-      orderBy: { order: 'asc' },
-      include: {
-        _count: {
-          select: { candidates: true },
-        },
-      },
-    });
+export const getCategories = async (_req: Request, res: Response, next: NextFunction): Promise<void> => {
+	try {
+		const categories = await prisma.category.findMany({
+			orderBy: { order: "asc" },
+		});
 
-    sendSuccess(res, categories);
-  } catch (error) {
-    next(error);
-  }
+		sendSuccess(res, categories);
+	} catch (error) {
+		next(error);
+	}
 };
 
-export const getCategory = async (
-  req: Request<{ id: string }>,
-  res: Response,
-  next: NextFunction
-): Promise<void> => {
-  try {
-    const { id } = req.params;
+export const getCategory = async (req: Request<{ id: string }>, res: Response, next: NextFunction): Promise<void> => {
+	try {
+		const { id } = req.params;
 
-    const category = await prisma.category.findUnique({
-      where: { id },
-      include: {
-        candidates: {
-          orderBy: { order: 'asc' },
-        },
-      },
-    });
+		const category = await prisma.category.findUnique({
+			where: { id },
+		});
 
-    if (!category) {
-      throw new AppError('Category not found', 404);
-    }
+		if (!category) {
+			throw new AppError("Category not found", 404);
+		}
 
-    sendSuccess(res, category);
-  } catch (error) {
-    next(error);
-  }
+		sendSuccess(res, category);
+	} catch (error) {
+		next(error);
+	}
 };
 
 export const createCategory = async (

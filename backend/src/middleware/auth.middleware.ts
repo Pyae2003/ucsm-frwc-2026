@@ -5,7 +5,7 @@ import { env } from '../config/index.js';
 export interface AuthRequest extends Request {
   admin?: {
     id: string;
-    email: string;
+    username: string;
   };
 }
 
@@ -31,7 +31,7 @@ export const authMiddleware = (
 
     const decoded = jwt.verify(token, env.JWT_SECRET) as {
       id: string;
-      email: string;
+      username: string;
     };
 
     req.admin = decoded;

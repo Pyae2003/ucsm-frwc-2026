@@ -7,21 +7,18 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model AdminUser {
+model Admin {
   id        String   @id @default(uuid())
-  email     String   @unique
+  username  String   @unique
   password  String
-  name      String
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @updatedAt @map("updated_at")
-
-  @@map("admin_users")
+  @@map("admins")
 }
 
 model Category {
   id          String   @id @default(uuid())
   name        String
-  description String?
   order       Int      @default(0)
   isActive    Boolean  @default(true) @map("is_active")
   createdAt   DateTime @default(now()) @map("created_at")
