@@ -22,10 +22,10 @@ router.get("/", getCategories);
 router.get("/:id", validateParams(categoryIdSchema), getCategory);
 
 // Protected routes (admin only)
-router.post("/", authMiddleware, validateBody(createCategorySchema), createCategory);
-router.patch("/reorder", authMiddleware, validateBody(reorderCategoriesSchema), reorderCategories);
-router.patch('/:id', authMiddleware, validateParams(categoryIdSchema), validateBody(updateCategorySchema), updateCategory);
-router.delete('/:id', authMiddleware, validateParams(categoryIdSchema), deleteCategory);
+router.post("/", validateBody(createCategorySchema), createCategory);
+router.patch("/reorder", validateBody(reorderCategoriesSchema), reorderCategories);
+router.patch('/:id', validateParams(categoryIdSchema), validateBody(updateCategorySchema), updateCategory);
+router.delete('/:id', validateParams(categoryIdSchema), deleteCategory);
 
 export default router;
 

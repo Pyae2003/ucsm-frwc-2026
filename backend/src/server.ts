@@ -4,7 +4,7 @@ import helmet from 'helmet';
 import { rateLimit } from 'express-rate-limit';
 import { env } from './config/index.js';
 import { errorHandler, notFoundHandler } from './middleware/index.js';
-import { authRoutes, categoriesRoutes } from './modules/index.js';
+import { authRoutes, candidatesRoutes, categoriesRoutes } from './modules/index.js';
 
 const app = express();
 
@@ -19,6 +19,7 @@ app.use(rateLimit({ windowMs: 15 * 60 * 1000, max: 100 }));
 // Routes
 app.use('/api/admin', authRoutes);
 app.use('/api/categories', categoriesRoutes);
+app.use('/api/candidates/', candidatesRoutes);
 
 // Health check
 app.get('/api/health', (_req, res) => {
