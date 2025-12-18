@@ -32,7 +32,15 @@ const candidatesController = {
         next : NextFunction
         ) : Promise<void> => {
             try{
-                const { nomineeId , name } = req.body;
+                const { nomineeId , name ,category } = req.body;
+
+                const check_category = await prisma.category.findUnique({
+                    where : {name : category}
+                });
+
+                if( !check_category ){
+                    throw new AppError("Category not found!",404);
+                }
 
                 if( !nomineeId || !name ){
                     throw new AppError("Please fill fully nomineeId and name!",400);
@@ -41,10 +49,11 @@ const candidatesController = {
                 const addedCan = await prisma.candidate.create({
                     data : {
                         nomineeId,
-                        name
+                        name,
+                        categoryId : check_category.id,
                     }
                 }); 
-
+                
                 sendSuccess(
                     res,
                     addedCan,
@@ -63,8 +72,16 @@ const candidatesController = {
         try{
             const id = req.params.id;
             console.log(id);
-            const { nomineeId , name } = req.body;
+            const { nomineeId , name , category } = req.body;
+           
 
+            const check_category = await prisma.category.findUnique({
+                where : {name : category}
+            });
+
+            if( !check_category ){
+                throw new AppError("Category not found!",404);
+            }
             if( !id ){
                 throw new AppError("Id Not Found!",404);
             };
@@ -81,7 +98,8 @@ const candidatesController = {
                 where : {id},
                 data : {
                     ...(nomineeId && {nomineeId}),
-                    ...(name && {name})
+                    ...(name && {name}),
+                    ...(category && {categoryId : check_category.id})
                 }
             });
 
@@ -143,11 +161,27 @@ const candidatesController = {
                 "Data deletion success!"
             )
         }catch(error){
-            console.log("Candidates updating Error" , error);
+            console.log("Candidate updating Error" , error);
             next(error);
         }
     },
-
+    AllCanditesDelete : async(
+        _req : Request,
+        res : Response,
+        next : NextFunction   
+    ) : Promise<void> => {
+        try{
+            const deletedAllCandidates = await prisma.candidate.deleteMany();
+            sendSuccess(
+                res,
+                deletedAllCandidates,
+                "All candidates deleted successfully!"
+            )
+        }catch(error){
+            console.log("Candidates deleting Error" , error);
+            next(error);
+        }
+    }
     
 }
 

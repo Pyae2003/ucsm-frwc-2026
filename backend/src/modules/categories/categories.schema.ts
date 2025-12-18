@@ -1,12 +1,12 @@
 import { z } from 'zod';
 
 export const createCategorySchema = z.object({
-	name: z.string().min(1, "Name is required"),
+	name: z.string().min(1, "Name is required").transform((val) => val.toUpperCase()),
 	isActive: z.boolean().optional(),
 });
 
 export const updateCategorySchema = z.object({
-	name: z.string().min(1, "Name is required").optional(),
+	name: z.string().min(1, "Name is required").transform((val) => val.toUpperCase()).optional(),
 	isActive: z.boolean().optional(),
 });
 

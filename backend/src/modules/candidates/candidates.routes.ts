@@ -16,5 +16,7 @@ router.delete("/delete/:id" ,validateParams(candidatesIdSchema), candidatesContr
 
 router.get("/singledata/:id" , candidatesController.onlyOneCandidates);
 
+router.delete("/deleteall" , candidatesController.AllCanditesDelete);
+
 
 export default router

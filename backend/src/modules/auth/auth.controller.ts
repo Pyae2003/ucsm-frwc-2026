@@ -35,7 +35,7 @@ export const login = async (
 			admin: {
 				id: admin.id,
 				username: admin.username,
-				name: admin.name,
+				// name: admin.name, 
 			},
 		});
 	} catch (error) {
@@ -56,7 +56,7 @@ export const getProfile = async (req: Request, res: Response, next: NextFunction
 			select: {
 				id: true,
 				username: true,
-				name: true,
+				// name: true,
 				createdAt: true,
 			},
 		});
