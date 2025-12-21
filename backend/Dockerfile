@@ -24,7 +24,14 @@ FROM node:22-alpine AS runner
 
 WORKDIR /app
 
+# Install wget for healthcheck
+RUN apk add --no-cache wget
+
 ENV NODE_ENV=production
+
+# Create non-root user for security
+RUN addgroup --system --gid 1001 nodejs && \
+    adduser --system --uid 1001 nodeuser
 
 # Copy package files and install production dependencies
 COPY package*.json ./
@@ -38,9 +45,22 @@ RUN npx prisma generate
 # Copy built files from builder
 COPY --from=builder /app/dist ./dist
 
+# Copy entrypoint script
+COPY docker-entrypoint.sh ./
+RUN chmod +x docker-entrypoint.sh
+
+# Change ownership to non-root user
+RUN chown -R nodeuser:nodejs /app
+
+# Switch to non-root user
+USER nodeuser
+
 # Expose port
 EXPOSE 8000
 
-# Start the application
-CMD ["node", "dist/server.js"]
+# Health check
+HEALTHCHECK --interval=30s --timeout=10s --start-period=40s --retries=3 \
+    CMD wget --no-verbose --tries=1 --spider http://localhost:8000/api/health || exit 1
 
+# Start the application with entrypoint
+ENTRYPOINT ["./docker-entrypoint.sh"]
